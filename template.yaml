@@ -17,18 +17,18 @@ Resources:
       Name: Basic AWS Api Gateway
       StageName: Staging
 
-  HelloWorldFunction:
+  FetchDataFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: hello_world/
+      CodeUri: core/
       Handler: app.lambda_handler
-      Runtime: python3.7
+      Runtime: python3.8
       Events:
-        HelloWorldApi:
+        FetchDataEndpoint:
           Type: Api
           Properties:
             RestApiId: !Ref BasicAWSApiGateway
-            Path: /hello
+            Path: /data
             Method: GET
 
 Outputs:
