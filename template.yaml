@@ -11,44 +11,25 @@ Globals:
     Timeout: 3
 
 Resources:
+  BasicAWSApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      Name: Basic AWS Api Gateway
+      StageName: Staging
 
-  # AuthFunction:
-  #   Type: AWS::Serverless::Function
-  #   Properties:
-  #     CodeUri: core/
-  #     Handler: auth.auth_handler
-  #     Runtime: python3.8
-  #     Architectures:
-  #       - x86_64
-  HelloWorldApi:
-    Type: AWS::ApiGateway::Api
-    Properties:
-      Name: HelloWorldApi
-      # Auth:
-      #   Authorizers: 
-      #     MyLambdaTokenAuth:
-      #       FunctionArn: !GetAtt AuthFunction.arn
-      Cors:
-          AllowMethods: "'POST, GET'"
-          AllowHeaders: "'*'"
-          AllowOrigin: "'*'"
-          AllowCredentials: false
-          MaxAge: "'600'"
   HelloWorldFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function
     Properties:
-      CodeUri: core/
+      CodeUri: hello_world/
       Handler: app.lambda_handler
-      Runtime: python3.8
-      Architectures:
-        - x86_64
+      Runtime: python3.7
       Events:
-        HelloWorld:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+        HelloWorldApi:
+          Type: Api
           Properties:
+            RestApiId: !Ref BasicAWSApiGateway
             Path: /hello
-            Method: get
-            RestApiId: !Ref HelloWorldApi
+            Method: GET
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
@@ -56,7 +37,7 @@ Outputs:
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
   HelloWorldApi:
     Description: "API Gateway endpoint URL for Prod stage for Hello World function"
-    Value: !Sub "https://${HelloWorldApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
+    Value: !Sub "https://${BasicAWSApiGateway}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
   HelloWorldFunction:
     Description: "Hello World Lambda Function ARN"
     Value: !GetAtt HelloWorldFunction.Arn
