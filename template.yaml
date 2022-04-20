@@ -12,24 +12,23 @@ Globals:
 
 Resources:
 
-  AuthFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      CodeUri: core/
-      Handler: auth.auth_handler
-      Runtime: python3.8
-      Architectures:
-        - x86_64
+  # AuthFunction:
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     CodeUri: core/
+  #     Handler: auth.auth_handler
+  #     Runtime: python3.8
+  #     Architectures:
+  #       - x86_64
 
 
   CoreApi:
     Type: AWS::ApiGateway::Api
     Properties:
-      Description: User Data Api
-      Auth:
-        Authorizers: 
-          MyLambdaTokenAuth:
-            FunctionArn: !GetAtt AuthFunction.arn
+      # Auth:
+      #   Authorizers: 
+      #     MyLambdaTokenAuth:
+      #       FunctionArn: !GetAtt AuthFunction.arn
       Cors:
           AllowMethods: "'POST, GET'"
           AllowHeaders: "'*'"
