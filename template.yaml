@@ -12,21 +12,6 @@ Globals:
 
 Resources:
 
-  CoreApi:
-    Type: AWS::ApiGateway::Api
-    Properties:
-      Description: User Data Api
-      # Auth:
-      #   Authorizers: 
-      #     MyLambdaTokenAuth:
-      #       FunctionArn: !GetAtt AuthFunction.arn
-      Cors:
-          AllowMethods: "'POST, GET'"
-          AllowHeaders: "'*'"
-          AllowOrigin: "'*'"
-          AllowCredentials: false
-          MaxAge: "'600'"
-
   AuthFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -35,13 +20,22 @@ Resources:
       Runtime: python3.8
       Architectures:
         - x86_64
-      Events:
-        AuthenticateRequest:
-          Type: Api 
-          Properties:
-            Path: /auth
-            Method: get
-            RestApiId: !Ref CoreApi
+
+
+  CoreApi:
+    Type: AWS::ApiGateway::Api
+    Properties:
+      Description: User Data Api
+      Auth:
+        Authorizers: 
+          MyLambdaTokenAuth:
+            FunctionArn: !GetAtt AuthFunction.arn
+      Cors:
+          AllowMethods: "'POST, GET'"
+          AllowHeaders: "'*'"
+          AllowOrigin: "'*'"
+          AllowCredentials: false
+          MaxAge: "'600'"
       
 
   HelloWorldFunction:
