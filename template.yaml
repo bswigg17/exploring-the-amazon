@@ -11,10 +11,43 @@ Globals:
     Timeout: 3
 
 Resources:
+
+  CoreApi:
+    Type: AWS::ApiGateway::Api
+    Properties:
+      Description: User Data Api
+      Auth:
+        Authorizers: 
+          MyLambdaTokenAuth:
+            FunctionArn: !GetAtt AuthFunction.arn
+      Cors:
+          AllowMethods: "'POST, GET'"
+          AllowHeaders: "'*'"
+          AllowOrigin: "'*'"
+          AllowCredentials: false
+          MaxAge: "'600'"
+
+  AuthFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      codeUri: core/
+      Handler: core.auth_handler
+      Runtime: python3.8
+      Architectures:
+        - x86_64
+      Events:
+        AuthenticateRequest:
+          Type: Api 
+          Properties:
+            Path: /auth
+            Method: get
+            RestApiId: !Ref CoreApi
+      
+
   HelloWorldFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: hello_world/
+      CodeUri: core/
       Handler: app.lambda_handler
       Runtime: python3.8
       Architectures:
@@ -32,7 +65,7 @@ Outputs:
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
   HelloWorldApi:
     Description: "API Gateway endpoint URL for Prod stage for Hello World function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
+    Value: !Sub "https://${CoreApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
   HelloWorldFunction:
     Description: "Hello World Lambda Function ARN"
     Value: !GetAtt HelloWorldFunction.Arn
