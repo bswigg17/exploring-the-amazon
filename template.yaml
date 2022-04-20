@@ -16,10 +16,10 @@ Resources:
     Type: AWS::ApiGateway::Api
     Properties:
       Description: User Data Api
-      Auth:
-        Authorizers: 
-          MyLambdaTokenAuth:
-            FunctionArn: !GetAtt AuthFunction.arn
+      # Auth:
+      #   Authorizers: 
+      #     MyLambdaTokenAuth:
+      #       FunctionArn: !GetAtt AuthFunction.arn
       Cors:
           AllowMethods: "'POST, GET'"
           AllowHeaders: "'*'"
