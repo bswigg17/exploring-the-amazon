@@ -17,11 +17,25 @@ Resources:
       Name: Basic AWS Api Gateway
       StageName: Staging
 
+  # PutDataFunction:
+  #   Type: AWS::Serverless::Function
+  #   Properties:
+  #     CodeUri: core/
+  #     Handler: app.put_data_handler
+  #     Runtime: python3.8
+  #     Events:
+  #       PutDataEndpoint:
+  #         Type: Api
+  #         Properties:
+  #           RestApiId: !Ref BasicAWSApiGateway
+  #           Path: /put
+  #           Method: GET
+
   FetchDataFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: core/
-      Handler: app.lambda_handler
+      Handler: app.get_data_handler
       Runtime: python3.8
       Events:
         FetchDataEndpoint:
@@ -30,17 +44,35 @@ Resources:
             RestApiId: !Ref BasicAWSApiGateway
             Path: /data
             Method: GET
+    
+  TeamDBTable: 
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: TeamDB
+      AttributeDefinitions:
+        - AttributeName: team
+          AttributeType: S
+        - AttributeName: data
+          AttributeType: S
+      KeySchema:
+        - AttributeName: team
+          KeyType: HASH
+        - AttributeName: data
+          KeyType: HASH
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
 
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  HelloWorldApi:
+  FetchDataFunction:
     Description: "API Gateway endpoint URL for Prod stage for Hello World function"
     Value: !Sub "https://${BasicAWSApiGateway}.execute-api.${AWS::Region}.amazonaws.com/Staging/data/"
-  HelloWorldFunction:
-    Description: "Hello World Lambda Function ARN"
-    Value: !GetAtt FetchDataFunction.Arn
+  PutDataFunction:
+    Description: "API Endpoint for Putting Data"
+    Value: !Sub "https://${BasicAWSApiGateway}.execute-api.${AWS::Region}.amazonaws.com/Staging/put/"
   # HelloWorldFunctionIamRole:
   #   Description: "Implicit IAM Role created for Hello World function"
   #   Value: !GetAtt HelloWorldFunctionRole.Arn
