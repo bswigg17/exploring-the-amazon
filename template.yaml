@@ -58,7 +58,7 @@ Resources:
         - AttributeName: team
           KeyType: HASH
         - AttributeName: data
-          KeyType: HASH
+          KeyType: RANGE
       ProvisionedThroughput:
         ReadCapacityUnits: 5
         WriteCapacityUnits: 5
